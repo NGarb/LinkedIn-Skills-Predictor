@@ -16,8 +16,9 @@ logger.level("DEBUG")
 
 def scrape_dice_listings(role: str = 'data scientist'):
     driver = _load_driver()
-    _load_page_for_role(driver, role)
-    _scrape_results_for_all_pages(driver, role)
+    _load_listings_for_role(driver, role)
+    results_df = _scrape_results_for_all_pages(driver, role)
+    results_df.to_csv('dice_data_scientist_roles.csv')
     driver.quit()
 
 
@@ -28,7 +29,7 @@ def _load_driver() -> WebDriver:
     return driver
 
 
-def _load_page_for_role(driver: WebDriver, role: str) -> None:
+def _load_listings_for_role(driver: WebDriver, role: str) -> None:
     search_input = driver.find_element(By.XPATH, "//*[@placeholder='Job title, skills or company']")
     search_input.send_keys(role)
     search_input.submit()
@@ -96,7 +97,7 @@ def _scroll_to_next_page(driver: WebDriver) -> None:
         EC.element_to_be_clickable((By.CSS_SELECTOR, "li.pagination-next.page-item.ng-star-inserted > a.page-link"))
     )
     next_button.click()
-    time.sleep(1)  # program needs to wait for website to catch up
+    time.sleep(5)  # program needs to wait for website to catch up
 
 
 if __name__ == "__main__":
